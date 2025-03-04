@@ -3,7 +3,7 @@ import { Toolbar, Typography, Grid, Card, CardMedia, CardContent, Pagination, Bu
 import { Favorite, FavoriteBorder } from "@mui/icons-material";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import "./details"; // стиль для сторінки деталей фільму
+import "./details";
 
 const API_KEY = "a9985d790ed03fe28c91a2295f212fde";
 const API_URL_POPULAR = "https://api.themoviedb.org/3/movie/popular";
@@ -25,14 +25,12 @@ function Popular() {
                         page: page,
                     },
                 });
-
                 setMovies(response.data.results);
                 setTotalPages(response.data.total_pages > 100 ? 100 : response.data.total_pages);
             } catch (error) {
                 console.error("Помилка завантаження фільмів:", error);
             }
         };
-
         fetchMovies();
 
         const savedMovies = JSON.parse(localStorage.getItem("likedMovies")) || [];
@@ -50,11 +48,9 @@ function Popular() {
             updatedLikedMovies.push(movie.id);
             savedMovies.push(movie);
         }
-
         setLikedMovies(updatedLikedMovies);
         localStorage.setItem("likedMovies", JSON.stringify(savedMovies));
     };
-
     return (
         <div style={{ backgroundColor: "rgb(18, 18, 18)", minHeight: "100vh", paddingBottom: "20px" }}>
             <Toolbar sx={{ backgroundColor: "rgb(28, 28, 28)", color: "rgb(255, 255, 255)", boxShadow: 1 }}>
@@ -90,22 +86,20 @@ function Popular() {
                                 onClick={() => navigate(`/movie/${movie.id}`)}
                                 sx={{ borderRadius: "10px 10px 0 0" }}
                             />
-
                             <CardContent sx={{ padding: "16px", color: "rgb(255, 255, 255)" }}>
                                 <Typography variant="h6" noWrap sx={{ overflow: "hidden", textOverflow: "ellipsis" }}>{movie.title}</Typography>
                                 <IconButton onClick={() => handleLike(movie)} sx={{ position: "absolute", top: "8px", right: "8px", color: likedMovies.includes(movie.id) ? "rgb(255, 0, 0)" : "rgb(169, 169, 169)" }}>
-                                    {likedMovies.includes(movie.id) ? <Favorite /> : <FavoriteBorder />}
+                                {likedMovies.includes(movie.id) ? <Favorite /> : <FavoriteBorder />}
                                 </IconButton>
                             </CardContent>
                         </Card>
                     </Grid>
                 ))}
             </Grid>
-
-            <Pagination 
+          <Pagination 
                 count={totalPages}
                 page={page}
-                onChange={(event, value) => setPage(value)}
+                onChange={( value) => setPage(value)}
                 color="primary"
                 sx={{ display: "flex", justifyContent: "center", margin: "20px 0", backgroundColor:"rgb(96, 96, 96)" }}
             />

@@ -19,22 +19,21 @@ function MovieDetails() {
   }, [id]);
 
   const caruselSlider = {
-    dots: true, // Додаємо пагінацію для каруселі
+    dots: true, 
     infinite: true,
     speed: 500,
     slidesToShow: 4,
     slidesToScroll: 1,
-    autoplay: true, // Автоперемикання слайдів
-    autoplaySpeed: 3000, // Затримка між слайдами
+    autoplay: true, 
+    autoplaySpeed: 3000, 
   };
-
   if (!movie) return <p>Завантаження...</p>;
 
   return (
-    <div className="flex flex-col items-center justify-center p-6 bg-gradient-to-b from-black to-gray-800 text-white">
-      <h1 className="text-center text-4xl font-semibold mb-4 text-yellow-400">{movie.title}</h1>
-      <div className="flex flex-col items-center mt-6 max-w-5xl mx-auto">
-        <Toolbar sx={{ ml: 146, mt: -8, backgroundColor: "transparent" }}>
+    <div >
+      <h1 >{movie.title}</h1>
+      <div >
+        <Toolbar sx={{ ml: 146, mt: -8, backgroundColor: "rgb(255, 255, 255)" }}>
           <Button
             variant="contained"
             onClick={() => navigate("/")}
@@ -55,32 +54,29 @@ function MovieDetails() {
         <img
           src={getImageUrl(movie.poster_path)}
           alt={movie.title}
-          className="w-72 rounded-lg shadow-lg mb-4 transition-transform duration-300 hover:scale-105"
         />
-
-        <div className="mt-4 text-center">
-          <p className="text-lg mb-2"><strong>Опис:</strong> {movie.overview}</p>
-          <p className="text-lg mb-2"><strong>Рейтинг:</strong> {movie.vote_average}</p>
-          <p className="text-lg mb-2"><strong>Дата виходу:</strong> {movie.release_date}</p>
+    <div >
+          <p ><strong>Опис:</strong> {movie.overview}</p>
+          <p ><strong>Рейтинг:</strong> {movie.vote_average}</p>
+          <p ><strong>Дата виходу:</strong> {movie.release_date}</p>
         </div>
       </div>
-
-      <h2 className="mt-8 text-2xl font-semibold text-yellow-400">Рекомендовані фільми</h2>
+      <h2 >Рекомендовані фільми</h2>
       {Array.isArray(recommendations) && recommendations.length > 0 ? (
         <Slider {...caruselSlider} className="mt-6">
           {recommendations.map((rec) => (
-            <div key={rec.id} className="flex flex-col items-center p-4">
+            <div key={rec.id} >
               <img
                 src={getImageUrl(rec.poster_path)}
                 alt={rec.title}
-                className="w-48 h-72 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105"
+               
               />
-              <p className="text-center mt-2 text-white font-semibold">{rec.title}</p>
+              <p >{rec.title}</p>
             </div>
           ))}
         </Slider>
       ) : (
-        <p className="text-white">Немає рекомендацій</p>
+        <p >Немає рекомендацій</p>
       )}
     </div>
   );

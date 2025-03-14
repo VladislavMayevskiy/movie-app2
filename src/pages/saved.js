@@ -28,7 +28,6 @@ function Saved() {
 
     return (
         <div style={{ backgroundColor: "#121212", minHeight: "100vh", color: "#fff" }}>
-            {/* Тулбар */}
             <Toolbar sx={{ backgroundColor: "#000", color: "#fff" }}>
                 <Button 
                     variant="contained" 
@@ -47,8 +46,6 @@ function Saved() {
                     Вподобані фільми
                 </Typography>
             </Toolbar>
-
-            {/* Список вподобаних фільмів */}
             <Box sx={{ padding: "20px" }}>
                 {likedMovies.length === 0 ? (
                     <Typography variant="h6" sx={{ textAlign: "center" }}>Немає вподобаних фільмів</Typography>

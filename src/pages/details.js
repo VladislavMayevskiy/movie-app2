@@ -7,6 +7,9 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
 
+
+
+
 function MovieDetails() {
   const { id } = useParams();
   const [movie, setMovie] = useState(null);

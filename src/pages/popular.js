@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Toolbar, Typography, Grid, Card, CardMedia, CardContent, Pagination, Button, IconButton } from "@mui/material";
-import { Favorite, FavoriteBorder } from "@mui/icons-material";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import "./details";
+import axios from "axios";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 
 const API_KEY = "a9985d790ed03fe28c91a2295f212fde";
 const API_URL_POPULAR = "https://api.themoviedb.org/3/movie/popular";
@@ -51,60 +49,52 @@ function Popular() {
         setLikedMovies(updatedLikedMovies);
         localStorage.setItem("likedMovies", JSON.stringify(savedMovies));
     };
+    
     return (
-        <div style={{ backgroundColor: "rgb(18, 18, 18)", minHeight: "100vh", paddingBottom: "20px" }}>
-            <Toolbar sx={{ backgroundColor: "rgb(28, 28, 28)", color: "rgb(255, 255, 255)", boxShadow: 1 }}>
-                <Typography variant="h6" sx={{ flexGrow: 1 }}>Популярні фільми</Typography>
-                <Button variant="contained" color="primary" onClick={() => navigate("/search")} sx={{ margin: "0 10px" }}>
-                    Пошук фільмів
-                </Button>
-                <Button variant="contained" color="success" onClick={() => navigate("/saved")} sx={{ margin: "0 10px" }}>
-                    Вподобані
-                </Button>
-            </Toolbar>
-
-            <Grid container spacing={3} padding={3}>
+        <div className="bg-gray-900 min-h-screen text-white">
+            <header className="bg-gray-800 p-4 flex justify-between items-center shadow-md">
+                <h1 className="text-xl font-bold">Популярні фільми</h1>
+                <div>
+                    <button className="bg-yellow-200 hover:bg-blue-600 text-white px-4 py-2 rounded mr-2" onClick={() => navigate("/search")}>Пошук</button>
+                    <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded" onClick={() => navigate("/saved")}>Вподобані</button>
+                </div>
+            </header>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6">
                 {movies.map((movie) => (
-                    <Grid item key={movie.id} xs={12} sm={6} md={4} lg={3}>
-                        <Card sx={{
-                            cursor: "pointer",
-                            position: "relative",
-                            backgroundColor: "rgb(30, 30, 30)",
-                            borderRadius: "10px",
-                            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.3)",
-                            transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                            '&:hover': {
-                                transform: "scale(1.05)",
-                                boxShadow: "0 8px 16px rgba(0, 0, 0, 0.6)"
-                            }
-                        }}>
-                            <CardMedia
-                                component="img"
-                                height="300"
-                                image={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : "/placeholder.jpg"}
-                                alt={movie.title}
-                                onClick={() => navigate(`/movie/${movie.id}`)}
-                                sx={{ borderRadius: "10px 10px 0 0" }}
-                            />
-                            <CardContent sx={{ padding: "16px", color: "rgb(255, 255, 255)" }}>
-                                <Typography variant="h6" noWrap sx={{ overflow: "hidden", textOverflow: "ellipsis" }}>{movie.title}</Typography>
-                                <IconButton onClick={() => handleLike(movie)} sx={{ position: "absolute", top: "8px", right: "8px", color: likedMovies.includes(movie.id) ? "rgb(255, 0, 0)" : "rgb(169, 169, 169)" }}>
-                                {likedMovies.includes(movie.id) ? <Favorite /> : <FavoriteBorder />}
-                                </IconButton>
-                            </CardContent>
-                        </Card>
-                    </Grid>
+                    <div key={movie.id} className="bg-gray-800 rounded-lg overflow-hidden shadow-lg relative">
+                        <img
+                            src={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : "/placeholder.jpg"}
+                            alt={movie.title}
+                            className="w-full h-80 object-cover cursor-pointer"
+                            onClick={() => navigate(`/movie/${movie.id}`)}
+                        />
+                        <div className="p-4 flex justify-between items-center">
+                            <h2 className="text-lg font-semibold truncate w-4/5">{movie.title}</h2>
+                            <button onClick={() => handleLike(movie)} className="text-red-500 text-2xl">
+                                {likedMovies.includes(movie.id) ? <FaHeart /> : <FaRegHeart />}
+                            </button>
+                        </div>
+                    </div>
                 ))}
-            </Grid>
-          <Pagination 
-                count={totalPages}
-                page={page}
-                onChange={( value) => setPage(value)}
-                color="primary"
-                sx={{ display: "flex", justifyContent: "center", margin: "20px 0", backgroundColor:"rgb(96, 96, 96)" }}
-            />
+            </div>
+            <div className="flex justify-center my-6">
+                <button
+                    onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                    className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-l-lg"
+                    disabled={page === 1}
+                >
+                    Назад
+                </button>
+                <span className="px-4 py-2 bg-gray-900">{page} / {totalPages}</span>
+                <button
+                    onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+                    className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-r-lg"
+                    disabled={page === totalPages}
+                >
+                    Далі
+                </button>
+            </div>
         </div>
     );
 }
-
 export default Popular;

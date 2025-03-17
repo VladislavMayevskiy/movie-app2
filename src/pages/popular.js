@@ -5,13 +5,30 @@ import { FaHeart, FaRegHeart } from "react-icons/fa";
 
 const API_KEY = "a9985d790ed03fe28c91a2295f212fde";
 const API_URL_POPULAR = "https://api.themoviedb.org/3/movie/popular";
+const API_URL_GENRES = "https://api.themoviedb.org/3/genre/movie/list";
 
-function Popular() {
+function Home() {
     const [movies, setMovies] = useState([]);
-    const [likedMovies, setLikedMovies] = useState([]);
+    const [likedMovies, setLikedMovies] = useState(new Set());
+    const [genres, setGenres] = useState([]);
+    const [selectedGenre, setSelectedGenre] = useState(null);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchGenres = async () => {
+            try {
+                const response = await axios.get(API_URL_GENRES, {
+                    params: { api_key: API_KEY, language: "uk-UA" }
+                });
+                setGenres(response.data.genres);
+            } catch (error) {
+                console.error("Помилка завантаження жанрів:", error);
+            }
+        };
+        fetchGenres();
+    }, []);
 
     useEffect(() => {
         const fetchMovies = async () => {
@@ -20,7 +37,8 @@ function Popular() {
                     params: {
                         api_key: API_KEY,
                         language: "uk-UA",
-                        page: page,
+                        page,
+                        with_genres: selectedGenre || "",
                     },
                 });
                 setMovies(response.data.results);
@@ -31,21 +49,22 @@ function Popular() {
         };
         fetchMovies();
 
-        const savedMovies = JSON.parse(localStorage.getItem("likedMovies")) || [];
-        setLikedMovies(savedMovies.map(movie => movie.id));
-    }, [page]);
+        const savedMovies = new Set(JSON.parse(localStorage.getItem("likedMovies"))?.map(m => m.id) || []);
+        setLikedMovies(savedMovies);
+    }, [page, selectedGenre]);
 
     const handleLike = (movie) => {
-        let updatedLikedMovies = [...likedMovies];
+        const updatedLikedMovies = new Set(likedMovies);
         let savedMovies = JSON.parse(localStorage.getItem("likedMovies")) || [];
-
-        if (likedMovies.includes(movie.id)) {
-            updatedLikedMovies = likedMovies.filter(id => id !== movie.id);
-            savedMovies = savedMovies.filter(savedMovie => savedMovie.id !== movie.id);
+        
+        if (likedMovies.has(movie.id)) {
+            updatedLikedMovies.delete(movie.id);
+            savedMovies = savedMovies.filter(m => m.id !== movie.id);
         } else {
-            updatedLikedMovies.push(movie.id);
+            updatedLikedMovies.add(movie.id);
             savedMovies.push(movie);
         }
+        
         setLikedMovies(updatedLikedMovies);
         localStorage.setItem("likedMovies", JSON.stringify(savedMovies));
     };
@@ -59,6 +78,16 @@ function Popular() {
                     <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded" onClick={() => navigate("/saved")}>Вподобані</button>
                 </div>
             </header>
+
+            <div className="p-4">
+                <select className="w-full p-2 bg-gray-700 text-white rounded" onChange={(e) => setSelectedGenre(e.target.value || null)}>
+                    <option value="">Всі жанри</option>
+                    {genres.map(genre => (
+                        <option key={genre.id} value={genre.id}>{genre.name}</option>
+                    ))}
+                </select>
+            </div>
+
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6">
                 {movies.map((movie) => (
                     <div key={movie.id} className="bg-gray-800 rounded-lg overflow-hidden shadow-lg relative">
@@ -71,16 +100,17 @@ function Popular() {
                         <div className="p-4 flex justify-between items-center">
                             <h2 className="text-lg font-semibold truncate w-4/5">{movie.title}</h2>
                             <button onClick={() => handleLike(movie)} className="text-red-500 text-2xl">
-                                {likedMovies.includes(movie.id) ? <FaHeart /> : <FaRegHeart />}
+                                {likedMovies.has(movie.id) ? <FaHeart /> : <FaRegHeart />}
                             </button>
                         </div>
                     </div>
                 ))}
             </div>
+
             <div className="flex justify-center my-6">
                 <button
                     onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-                    className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-l-lg"
+                    className={`px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-l-lg ${page === 1 ? "opacity-50 cursor-not-allowed" : ""}`}
                     disabled={page === 1}
                 >
                     Назад
@@ -88,7 +118,7 @@ function Popular() {
                 <span className="px-4 py-2 bg-gray-900">{page} / {totalPages}</span>
                 <button
                     onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
-                    className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-r-lg"
+                    className={`px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-r-lg ${page === totalPages ? "opacity-50 cursor-not-allowed" : ""}`}
                     disabled={page === totalPages}
                 >
                     Далі
@@ -97,4 +127,4 @@ function Popular() {
         </div>
     );
 }
-export default Popular;
+export default Home;

@@ -6,7 +6,7 @@ import Popular from "./pages/popular";
 import SearchPage from "./pages/search";
 import MovieDetails from "./pages/details";
 import Saved from "./pages/saved";
-import AuthPage from "./pages/AuthPage"; // Сторінка авторизації
+import AuthPage from "./pages/AuthPage"; 
 
 import "./index.css";
 
@@ -25,13 +25,22 @@ function App() {
 
     if (loading) return <h2>Завантаження...</h2>;
 
+    const handleLogout = () => {
+        signOut(auth)
+            .then(() => {
+                setUser(null);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    };
+
     return (
         <>
             <Routes>
                 {!user ? (
                     <>
                         <Route path="/auth" element={<AuthPage setUser={setUser} />} />
-                      
                         <Route path="*" element={<Navigate to="/auth" replace />} />
                     </>
                 ) : (
@@ -40,22 +49,18 @@ function App() {
                         <Route path="/search" element={<SearchPage />} />
                         <Route path="/movie/:id" element={<MovieDetails />} />
                         <Route path="/saved" element={<Saved />} />
-                        <Route path="/logout" element={<Logout />} />
                         <Route path="*" element={<Navigate to="/" replace />} />
                     </>
                 )}
             </Routes>
-            {user && <button onClick={() => signOut(auth)}>Вийти</button>}
+
+            {user && (
+                <button onClick={handleLogout} className="logout-btn">
+                    Вийти
+                </button>
+            )}
         </>
     );
 }
-
-// Компонент для виходу
-const Logout = () => {
-    useEffect(() => {
-        signOut(auth);
-    }, []);
-    return <Navigate to="/auth" />;
-};
 
 export default App;

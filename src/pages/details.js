@@ -6,16 +6,23 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
+import axios from "axios";
 
 
-
+const API_URL_GENRES ="https://api.themoviedb.org/3/genre/movie/list?api_key=REACT_APP_TMDB_API_KEY&language=uk-UA"
 
 function MovieDetails() {
   const { id } = useParams();
   const [movie, setMovie] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
   const [backupMovies, setBackupMovies] = useState([]); 
+  const [genres,setGenres] = useState([]);
   const navigate = useNavigate();
+  
+useEffect (() => {
+  axios.get(API_URL_GENRES)
+  .then ((response) => setGenres (response.data.results))
+})
 
   useEffect(() => {
     getMovieDetails(id).then(setMovie);
@@ -41,7 +48,12 @@ function MovieDetails() {
   };
 
   const moviesToShow = recommendations.length > 0 ? recommendations : backupMovies;
-
+  const getGenresNames = (genresIds) => {
+    return genres 
+    .filter((genre) => genresIds.includes(genre.id))
+    .map ((genre) =>genre.name)
+  } 
+  
   if (!movie) return <p>Завантаження...</p>;
 
   return (

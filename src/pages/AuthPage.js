@@ -114,7 +114,7 @@ const AuthPage = ({ setUser }) => {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6 }}
       >
-        {/* Назва "Movie App Air Max 90" */}
+       
         <h1 className="text-3xl font-bold text-white text-center mb-4">
           Movie App Air Max 90
         </h1>
